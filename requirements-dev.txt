@@ -1,0 +1,5 @@
+# Dev/CI-only tools — not needed just to run the app.
+-r requirements.txt
+
+pytest>=8.0.0
+ruff>=0.6.0

@@ -1,0 +1,11 @@
+.env
+kaggle.json
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+data/*.csv
+data/*_raw/
+db/*.db
+.venv/
+venv/

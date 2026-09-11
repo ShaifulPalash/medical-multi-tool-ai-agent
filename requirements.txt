@@ -1,0 +1,19 @@
+# --- Core LangChain stack ---
+langchain>=0.3.0
+langchain-community>=0.3.0
+langchain-openai>=0.2.0
+langgraph>=0.2.0
+
+langchain-google-genai>=4.0.0  # use for free
+
+# --- Data handling ---
+kaggle>=1.6.0        # official Kaggle API client — needs a kaggle.json credentials file, see README
+pandas>=2.2.0
+SQLAlchemy>=2.0.0
+
+# --- Web search tool ---
+tavily-python>=0.5.0        # preferred: free API key from tavily.com
+duckduckgo-search>=6.2.0    # fallback: no API key required at all
+
+# --- Utilities ---
+python-dotenv>=1.0.0
