@@ -67,9 +67,7 @@ def test_unsafe_sql_is_rejected(bad_sql):
 
 
 def test_run_read_only_query_returns_expected_rows(sample_db):
-    columns, rows = run_read_only_query(
-        sample_db, "SELECT glucose FROM diabetes WHERE outcome = 1"
-    )
+    columns, rows = run_read_only_query(sample_db, "SELECT glucose FROM diabetes WHERE outcome = 1")
     assert columns == ["glucose"]
     assert rows == [(148,), (183,)]
 

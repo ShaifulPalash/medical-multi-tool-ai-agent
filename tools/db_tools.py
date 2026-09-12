@@ -41,7 +41,6 @@ from tools.sql_safety import (
     run_read_only_query,
 )
 
-
 # ---------------------------------------------------------
 # Database directory
 # ---------------------------------------------------------
@@ -72,9 +71,7 @@ def _get_sql_llm():
     global _sql_llm
 
     if _sql_llm is None:
-        _sql_llm = ChatGoogleGenerativeAI(
-            model=os.getenv("AGENT_MODEL", "gemini-3.6-flash")
-        )
+        _sql_llm = ChatGoogleGenerativeAI(model=os.getenv("AGENT_MODEL", "gemini-3.6-flash"))
 
     return _sql_llm
 
@@ -221,9 +218,7 @@ def _format_db_result(
         result_lines.append(str(row))
 
     if len(rows) > 50:
-        result_lines.append(
-            f"\nOnly the first 50 rows are shown out of {len(rows)} total rows."
-        )
+        result_lines.append(f"\nOnly the first 50 rows are shown out of {len(rows)} total rows.")
 
     return "\n".join(result_lines)
 
@@ -283,8 +278,7 @@ def _make_db_tool(db_filename: str, table_name: str):
 
         except Exception as e:
             return (
-                f"Could not generate the database query: {e}. "
-                "Please try rephrasing the question."
+                f"Could not generate the database query: {e}. Please try rephrasing the question."
             )
 
         # -------------------------------------------------
@@ -298,16 +292,10 @@ def _make_db_tool(db_filename: str, table_name: str):
             )
 
         except UnsafeSQLError as e:
-            return (
-                f"I couldn't safely run that query ({e}). "
-                "Try rephrasing the question."
-            )
+            return f"I couldn't safely run that query ({e}). Try rephrasing the question."
 
         except Exception as e:
-            return (
-                f"The database query failed: {e}. "
-                "Try rephrasing the question."
-            )
+            return f"The database query failed: {e}. Try rephrasing the question."
 
         # -------------------------------------------------
         # Step 4: Return structured result

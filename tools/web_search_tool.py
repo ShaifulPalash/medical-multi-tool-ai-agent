@@ -59,7 +59,6 @@ import os
 
 from langchain_core.tools import tool
 
-
 # ---------------------------------------------------------------------------
 # Tavily API key
 # ---------------------------------------------------------------------------
@@ -106,15 +105,9 @@ def _search_with_tavily(query: str) -> str:
 
     from langchain_community.tools.tavily_search import TavilySearchResults
 
-    backend = TavilySearchResults(
-        max_results=5
-    )
+    backend = TavilySearchResults(max_results=5)
 
-    results = backend.invoke(
-        {
-            "query": query
-        }
-    )
+    results = backend.invoke({"query": query})
 
     if not results:
         return "No results found."
@@ -125,9 +118,7 @@ def _search_with_tavily(query: str) -> str:
         content = result.get("content", "")
         url = result.get("url", "")
 
-        formatted_results.append(
-            f"- {content} (source: {url})"
-        )
+        formatted_results.append(f"- {content} (source: {url})")
 
     return "\n\n".join(formatted_results)
 

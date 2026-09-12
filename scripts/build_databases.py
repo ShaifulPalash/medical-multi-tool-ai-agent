@@ -45,9 +45,14 @@ TABLES = {
 # by download_and_inspect.py for YOUR actual downloaded CSVs, and add any
 # abbreviation it misses.
 ZERO_AS_MISSING_KEYWORDS = [
-    "pressure", "glucose", "bmi", "chol", "insulin", "thickness",
+    "pressure",
+    "glucose",
+    "bmi",
+    "chol",
+    "insulin",
+    "thickness",
     "trestbps",  # heart disease dataset: resting blood pressure
-    "thalach",   # heart disease dataset: max heart rate achieved
+    "thalach",  # heart disease dataset: max heart rate achieved
 ]
 
 

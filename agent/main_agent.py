@@ -58,8 +58,8 @@ an unnecessary final Gemini call.
 
 import os
 
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import create_agent
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from tools.db_tools import (
     cancer_db_tool,
@@ -67,7 +67,6 @@ from tools.db_tools import (
     heart_disease_db_tool,
 )
 from tools.web_search_tool import medical_web_search_tool
-
 
 # ---------------------------------------------------------------------------
 # System prompt

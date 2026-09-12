@@ -48,8 +48,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import pandas as pd
-from kaggle.api.kaggle_api_extended import KaggleApi
+import pandas as pd  # noqa: E402
+from kaggle.api.kaggle_api_extended import KaggleApi  # noqa: E402
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -131,8 +131,14 @@ def inspect_dataframe(name: str, df: pd.DataFrame) -> None:
     # read the actual printed column names above and judge for yourself
     # whether a 0 makes biological sense for that specific column.
     zero_missing_keywords = [
-        "pressure", "glucose", "bmi", "chol", "insulin", "thickness",
-        "trestbps", "thalach",
+        "pressure",
+        "glucose",
+        "bmi",
+        "chol",
+        "insulin",
+        "thickness",
+        "trestbps",
+        "thalach",
     ]
     for col in df.select_dtypes(include="number").columns:
         if df[col].min() == 0 and any(keyword in col.lower() for keyword in zero_missing_keywords):

@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from agent.main_agent import ask, build_agent, final_answer_text
+from agent.main_agent import ask, build_agent, final_answer_text  # noqa: E402
 
 TEST_CASES = [
     ("What is the average age of patients with heart disease?", "heart_disease_db_tool"),

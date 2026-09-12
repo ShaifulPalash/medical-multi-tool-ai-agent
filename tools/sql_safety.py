@@ -13,8 +13,20 @@ import re
 import sqlite3
 
 FORBIDDEN_KEYWORDS = [
-    "INSERT", "UPDATE", "DELETE", "DROP", "ALTER", "CREATE", "REPLACE",
-    "ATTACH", "DETACH", "PRAGMA", "VACUUM", "TRUNCATE", "GRANT", "REVOKE",
+    "INSERT",
+    "UPDATE",
+    "DELETE",
+    "DROP",
+    "ALTER",
+    "CREATE",
+    "REPLACE",
+    "ATTACH",
+    "DETACH",
+    "PRAGMA",
+    "VACUUM",
+    "TRUNCATE",
+    "GRANT",
+    "REVOKE",
 ]
 
 DEFAULT_ROW_LIMIT = 200
