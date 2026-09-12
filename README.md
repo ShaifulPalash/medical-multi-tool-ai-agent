@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/badge/LangGraph-Agent-FF6B35" alt="LangGraph">
   <img src="https://img.shields.io/badge/Google%20Gemini-LLM-4285F4?logo=google&logoColor=white" alt="Google Gemini">
   <img src="https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white" alt="SQLite">
+  <img src="https://img.shields.io/badge/Gradio-Web%20UI-FF7C00?logo=gradio&logoColor=white" alt="Gradio">
   <img src="https://img.shields.io/badge/Tavily-Web%20Search-7C3AED" alt="Tavily">
   <img src="https://img.shields.io/badge/DuckDuckGo-Web%20Search-DE5833?logo=duckduckgo&logoColor=white" alt="DuckDuckGo">
 </p>
@@ -23,7 +24,7 @@ The agent can answer:
 * 🌐 General medical knowledge questions
 * 🔎 Medical definitions, symptoms, causes, and general treatment information
 
-The project uses **Google Gemini** as the LLM, **SQLite** for structured medical datasets, **Tavily/DuckDuckGo** for web search, and **LangChain/LangGraph** for agent orchestration.
+The project uses **Google Gemini** as the LLM, **SQLite** for structured medical datasets, **Tavily/DuckDuckGo** for web search, **LangChain/LangGraph** for agent orchestration, and **Gradio** for the web-based user interface.
 
 ---
 
@@ -31,6 +32,7 @@ The project uses **Google Gemini** as the LLM, **SQLite** for structured medical
 
 * [Project Overview](#-project-overview)
 * [Key Features](#-key-features)
+* [Application Demo](#-application-demo)
 * [Architecture](#-architecture)
 * [How the Agent Works](#-how-the-agent-works)
 * [Datasets](#-datasets)
@@ -43,24 +45,36 @@ The project uses **Google Gemini** as the LLM, **SQLite** for structured medical
 * [Build the Databases](#-build-the-databases)
 * [Run the Application](#-run-the-application)
 * [Example Queries](#-example-queries)
+* [Verified Application Results](#-verified-application-results)
 * [Tool Routing](#-tool-routing)
+* [Google Gemini](#-google-gemini)
+* [Web Search](#-web-search)
+* [Tavily Integration Note](#-tavily-integration-note)
 * [SQL Safety](#-sql-safety)
 * [Testing](#-testing)
 * [Code Quality](#-code-quality)
 * [Continuous Integration](#-continuous-integration)
+* [Requirements Files](#-requirements-files)
 * [Makefile](#-makefile)
+* [Important Python Files](#-important-python-files)
+* [Test Architecture](#-test-architecture)
+* [Gemini Free-Tier Quota](#-gemini-free-tier-quota)
 * [Medical Safety Disclaimer](#-medical-safety-disclaimer)
 * [Known Limitations](#-known-limitations)
 * [Future Improvements](#-future-improvements)
-* [Security](#-security)
+* [Security Best Practices](#-security-best-practices)
 * [Project Status](#-project-status)
+* [Development Workflow](#-development-workflow)
+* [Learning Objectives](#-learning-objectives)
+* [License](#-license)
 * [Author](#-author)
+* [Final Notes](#-final-notes)
 
 ---
 
-# 🎯 Project Overview
+## 🎯 Project Overview
 
-The **Medical Multi-Tool AI Agent** is designed to demonstrate how an AI agent can interact with multiple data sources and select the appropriate tool based on the user's question.
+The **Medical Multi-Tool AI Agent** demonstrates how an AI agent can interact with multiple data sources and select the appropriate tool based on the user's question.
 
 Instead of sending every question directly to the Internet, the agent determines whether the user is asking about:
 
@@ -69,7 +83,12 @@ Instead of sending every question directly to the Internet, the agent determines
 
 For dataset-related questions, the agent uses SQLite databases generated from Kaggle CSV datasets.
 
-For general medical questions, the agent uses a web-search tool.
+For general medical questions, the agent uses a medical web-search tool.
+
+The project provides two ways to interact with the agent:
+
+* **CLI:** `main.py` for terminal-based interaction
+* **Web UI:** `app.py` using Gradio
 
 ### Example
 
@@ -107,53 +126,169 @@ Medical information + disclaimer
 
 ---
 
-# ✨ Key Features
+## ✨ Key Features
 
 * 🤖 AI-powered tool selection using Google Gemini
 * 🧠 LangChain agent orchestration
 * 🗄️ SQLite databases for medical datasets
 * ❤️ Heart disease dataset tool
-* 🎗️ Cancer prediction dataset tool
-* 🩺 Diabetes prediction dataset tool
+* 🎗️ Cancer dataset tool
+* 🩺 Diabetes dataset tool
 * 🌐 General medical web-search tool
 * 🔎 Tavily as the primary web-search backend
 * 🔄 DuckDuckGo fallback when Tavily is unavailable
 * 🔐 SQL safety validation
+* 🖥️ Terminal-based CLI interface
+* 🌐 Gradio web interface
 * 🧪 Automated tests using Pytest
 * 🧹 Code-quality checking using Ruff
 * ⚙️ GitHub Actions CI workflow
 * 📦 Separate runtime and development requirements
-* 🔑 Environment-variable based API configuration
+* 🔑 Environment-variable-based API configuration
 * ⚠️ Medical information disclaimer
 
 ---
 
-# 🏗️ Architecture
+## 📸 Application Demo
+
+The project includes a **Gradio web interface** that provides a simple browser-based way to interact with the Medical Multi-Tool AI Agent.
+
+Start the Gradio application with:
+
+```cmd
+python app.py
+```
+
+Gradio will provide a local URL in the terminal, typically similar to:
+
+```text
+http://127.0.0.1:7860
+```
+
+### ❤️ Heart Disease Database
+
+The following screenshot demonstrates a successful query against the heart disease database.
+
+**Question:**
+
+```text
+What is the average age of patients in the heart disease dataset?
+```
+
+```text
+How many patients have a resting blood pressure above 140 in the heart disease dataset?
+```
+
+<p align="center">
+  <img src="images/heart_disease_db_demo.png" alt="Heart disease database query in Gradio" width="850">
+</p>
+
+---
+
+### 🎗️ Cancer Database
+
+The following screenshot demonstrates a successful query against the cancer database.
+
+**Question:**
+
+```text
+How many patients were diagnosed with cancer in the cancer dataset?
+```
+
+```text
+What is the average BMI of smookers in the cancer dataset?
+```
+
+<p align="center">
+  <img src="images/cancer_db_demo.png" alt="Cancer database query in Gradio" width="850">
+</p>
+
+---
+
+### 🩺 Diabetes Database
+
+The diabetes database was tested with multiple statistical questions.
+
+**Question:**
+
+```text
+What is the average BMI of diabetic patients in the diabetes dataset?
+```
+
+```text
+What is the average glucose level of patients in the diabetes dataset?
+```
+
+<p align="center">
+  <img src="images/diabetes_db_demo.png" alt="Diabetes database query in Gradio" width="850">
+</p>
+
+---
+
+### 🌐 Medical Web Search
+
+General medical questions are routed to the medical web-search tool.
+
+**Example question:**
+
+```text
+What are the symptoms of diabetes?
+```
+
+<p align="center">
+  <img src="images/web_search_demo_1.png" alt="Medical web search query in Gradio" width="850">
+</p>
+
+Another example:
+
+```text
+What causes heart disease?
+```
+
+<p align="center">
+  <img src="images/web_search_demo_2.png" alt="Medical web search result in Gradio" width="850">
+</p>
+
+The web-search tool provides general medical information and includes an appropriate medical disclaimer.
+
+---
+
+## 🏗️ Architecture
 
 ```text
                          ┌──────────────────────┐
                          │        User          │
                          └──────────┬───────────┘
                                     │
+                    ┌───────────────┴───────────────┐
+                    │                               │
+                    ▼                               ▼
+           ┌─────────────────┐             ┌─────────────────┐
+           │    main.py      │             │     app.py      │
+           │   CLI Interface │             │   Gradio Web UI │
+           └────────┬────────┘             └────────┬────────┘
+                    │                               │
+                    └───────────────┬───────────────┘
+                                    │
                                     ▼
                          ┌──────────────────────┐
-                         │   Main AI Agent      │
-                         │   Google Gemini      │
-                         │     + LangChain      │
+                         │    Main AI Agent     │
+                         │    Google Gemini     │
+                         │      + LangChain     │
                          └──────────┬───────────┘
                                     │
               ┌─────────────────────┼─────────────────────┐
               │                     │                     │
               ▼                     ▼                     ▼
-   ┌──────────────────┐  ┌──────────────────┐  ┌────────────────────┐
-   │ Heart Disease DB │  │    Cancer DB     │  │    Diabetes DB     │
-   │      Tool        │  │      Tool        │  │       Tool         │
-   └────────┬─────────┘  └────────┬─────────┘  └─────────┬──────────┘
-            │                     │                      │
-            ▼                     ▼                      ▼
-   ┌──────────────────┐  ┌──────────────────┐  ┌────────────────────┐
-   │ heart_disease.db │  │    cancer.db     │  │    diabetes.db     │
-   └──────────────────┘  └──────────────────┘  └────────────────────┘
+     ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+     │ Heart Disease DB │  │    Cancer DB     │  │   Diabetes DB    │
+     │      Tool        │  │      Tool        │  │      Tool        │
+     └────────┬─────────┘  └────────┬─────────┘  └────────┬─────────┘
+              │                     │                     │
+              ▼                     ▼                     ▼
+     ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+     │ heart_disease.db │  │    cancer.db     │  │   diabetes.db    │
+     └──────────────────┘  └──────────────────┘  └──────────────────┘
 
                                     │
                                     │ General medical question
@@ -163,16 +298,16 @@ Medical information + disclaimer
                          │        Tool          │
                          └──────────┬───────────┘
                                     │
-                          ┌─────────┴─────────┐
-                          ▼                   ▼
-                     ┌─────────┐       ┌─────────────┐
-                     │ Tavily  │       │ DuckDuckGo  │
-                     └─────────┘       └─────────────┘
+                         ┌──────────┴──────────┐
+                         ▼                     ▼
+                    ┌─────────┐         ┌─────────────┐
+                    │ Tavily  │         │ DuckDuckGo  │
+                    └─────────┘         └─────────────┘
 ```
 
 ---
 
-# 🔄 How the Agent Works
+## 🔄 How the Agent Works
 
 The overall workflow is:
 
@@ -188,8 +323,8 @@ Understand User Intent
       ├── Dataset Statistics
       │       │
       │       ├── Heart Disease → Heart DB Tool
-      │       ├── Cancer       → Cancer DB Tool
-      │       └── Diabetes     → Diabetes DB Tool
+      │       ├── Cancer        → Cancer DB Tool
+      │       └── Diabetes      → Diabetes DB Tool
       │
       └── General Medical Knowledge
               │
@@ -202,11 +337,11 @@ Understand User Intent
 
 ---
 
-# 📊 Datasets
+## 📊 Datasets
 
 The project uses three Kaggle datasets.
 
-## 1. Heart Disease Dataset
+### 1. Heart Disease Dataset
 
 Kaggle dataset:
 
@@ -238,7 +373,7 @@ How many patients have a resting blood pressure above 140?
 
 ---
 
-## 2. Cancer Prediction Dataset
+### 2. Cancer Prediction Dataset
 
 Kaggle dataset:
 
@@ -270,7 +405,7 @@ What is the average BMI of smokers in the cancer dataset?
 
 ---
 
-## 3. Diabetes Prediction Dataset
+### 3. Diabetes Prediction Dataset
 
 Kaggle dataset:
 
@@ -296,15 +431,19 @@ Tool:
 diabetes_db_tool
 ```
 
-Example question:
+Example questions:
 
 ```text
-What is the average BMI of diabetic patients in the dataset?
+What is the average BMI of diabetic patients in the diabetes dataset?
+```
+
+```text
+What is the average glucose level of patients in the diabetes dataset?
 ```
 
 ---
 
-# 🛠️ Technology Stack
+## 🛠️ Technology Stack
 
 | Technology               | Purpose                           |
 | ------------------------ | --------------------------------- |
@@ -317,19 +456,20 @@ What is the average BMI of diabetic patients in the dataset?
 | SQLAlchemy               | Database interaction              |
 | Pandas                   | CSV/data processing               |
 | Kaggle API               | Dataset download                  |
+| Gradio                   | Web-based user interface          |
 | Tavily                   | Primary web search                |
 | DuckDuckGo               | Web-search fallback               |
 | Python-dotenv            | Environment variable management   |
 | Pytest                   | Automated testing                 |
-| Ruff                     | Linting/code quality              |
+| Ruff                     | Linting and code quality          |
 | GitHub Actions           | Continuous Integration            |
 
 ---
 
-# 📁 Project Structure
+## 📁 Project Structure
 
 ```text
-med-multi-tool-agent/
+medical-multi-tool-agent/
 │
 ├── .github/
 │   └── workflows/
@@ -344,6 +484,13 @@ med-multi-tool-agent/
 │   ├── heart_disease.db
 │   ├── cancer.db
 │   └── diabetes.db
+│
+├── images/
+│   ├── cancer_db_demo.png
+│   ├── diabetes_db_demo.png
+│   ├── heart_disease_db_demo.png
+│   ├── web_search_demo_1.png
+│   └── web_search_demo_2.png
 │
 ├── scripts/
 │   ├── download_and_inspect.py
@@ -360,9 +507,9 @@ med-multi-tool-agent/
 │   ├── db_tools.py
 │   └── web_search_tool.py
 │
-├── .env
 ├── .env.example
 ├── .gitignore
+├── app.py
 ├── main.py
 ├── Makefile
 ├── pyproject.toml
@@ -371,9 +518,11 @@ med-multi-tool-agent/
 └── requirements-dev.txt
 ```
 
+> **Note:** The actual `.env` file should remain local and must not be committed to GitHub. Generated database files may also be excluded from version control depending on the project's `.gitignore` configuration.
+
 ---
 
-# 💻 Prerequisites
+## 💻 Prerequisites
 
 Before running the project, make sure the following are installed:
 
@@ -397,9 +546,9 @@ Python 3.12.0
 
 ---
 
-# 📦 Installation
+## 📦 Installation
 
-## 1. Clone the repository
+### 1. Clone the repository
 
 ```cmd
 git clone <your-repository-url>
@@ -408,12 +557,12 @@ git clone <your-repository-url>
 Move into the project directory:
 
 ```cmd
-cd med-multi-tool-agent
+cd medical-multi-tool-agent
 ```
 
 ---
 
-## 2. Create a virtual environment
+### 2. Create a virtual environment
 
 On Windows:
 
@@ -423,7 +572,7 @@ py -m venv .venv
 
 ---
 
-## 3. Activate the virtual environment
+### 3. Activate the virtual environment
 
 ```cmd
 .venv\Scripts\activate
@@ -432,12 +581,12 @@ py -m venv .venv
 After activation, the terminal should look similar to:
 
 ```text
-(.venv) E:\Assignment- 23\med-multi-tool-agent>
+(.venv) E:\Assignment- 23\medical-multi-tool-agent>
 ```
 
 ---
 
-## 4. Upgrade pip
+### 4. Upgrade pip
 
 ```cmd
 python -m pip install --upgrade pip
@@ -445,15 +594,17 @@ python -m pip install --upgrade pip
 
 ---
 
-## 5. Install runtime dependencies
+### 5. Install runtime dependencies
 
 ```cmd
 python -m pip install -r requirements.txt
 ```
 
+The runtime dependencies include the Gradio web interface.
+
 ---
 
-## 6. Install development dependencies
+### 6. Install development dependencies
 
 ```cmd
 python -m pip install -r requirements-dev.txt
@@ -467,7 +618,7 @@ The development requirements include:
 
 ---
 
-# 🔐 Environment Variables
+## 🔐 Environment Variables
 
 Create a `.env` file in the project root:
 
@@ -475,7 +626,6 @@ Create a `.env` file in the project root:
 GEMINI_API_KEY=your_gemini_api_key
 TAVILY_API_KEY=your_tavily_api_key
 KAGGLE_CONFIG_DIR=D:\Kaggle
-
 AGENT_MODEL=gemini-3.6-flash
 ```
 
@@ -483,7 +633,7 @@ AGENT_MODEL=gemini-3.6-flash
 
 Never commit your real `.env` file to GitHub.
 
-Your `.gitignore` should contain:
+Your `.gitignore` should contain at least:
 
 ```gitignore
 .env
@@ -496,7 +646,7 @@ __pycache__/
 
 ---
 
-# 🔑 Kaggle Configuration
+## 🔑 Kaggle Configuration
 
 The project downloads datasets using the Kaggle API.
 
@@ -514,7 +664,7 @@ KAGGLE_CONFIG_DIR=D:\Kaggle
 
 ### Important
 
-`KAGGLE_CONFIG_DIR` must point to the **directory containing `kaggle.json`**, not directly to the JSON file.
+`KAGGLE_CONFIG_DIR` must point to the **directory containing** `kaggle.json`, not directly to the JSON file.
 
 Correct:
 
@@ -532,7 +682,7 @@ Do not upload `kaggle.json` to GitHub.
 
 ---
 
-# 🗄️ Build the Databases
+## 🗄️ Build the Databases
 
 The CSV datasets are converted into SQLite databases using:
 
@@ -543,7 +693,7 @@ scripts/build_databases.py
 Run:
 
 ```cmd
-python scripts\build_databases.py
+python scripts/build_databases.py
 ```
 
 The script creates or updates:
@@ -557,9 +707,13 @@ db/
 
 ---
 
-# ▶️ Run the Application
+## ▶️ Run the Application
 
-Start the Medical Multi-Tool AI Agent with:
+The project provides two application interfaces.
+
+### Option 1: Terminal Interface
+
+Start the CLI application with:
 
 ```cmd
 python main.py
@@ -571,9 +725,7 @@ You should see:
 Medical Multi-Tool Agent — type 'exit' to quit.
 ```
 
-Then enter a question.
-
-Example:
+Then enter a question:
 
 ```text
 You: What is the average age in the heart disease dataset?
@@ -587,13 +739,43 @@ You: exit
 
 ---
 
-# 🧪 Example Queries
+### Option 2: Gradio Web Interface
+
+Start the Gradio application with:
+
+```cmd
+python app.py
+```
+
+The terminal will display a local Gradio URL, typically:
+
+```text
+http://127.0.0.1:7860
+```
+
+Open the URL in your browser to interact with the agent through the web interface.
+
+To stop the Gradio application, return to the terminal where it is running and press:
+
+```text
+Ctrl + C
+```
+
+The CLI and Gradio interfaces both use the same underlying agent implementation from:
+
+```text
+agent/main_agent.py
+```
+
+---
+
+## 🧪 Example Queries
 
 The following queries were successfully tested with the project.
 
-## Heart Disease
+### Heart Disease
 
-### Average age
+#### Average Age
 
 ```text
 What is the average age in the heart disease dataset?
@@ -605,7 +787,7 @@ Result:
 The average age of patients in the heart disease dataset is approximately 54.42 years.
 ```
 
-### Resting blood pressure
+#### Resting Blood Pressure
 
 ```text
 How many patients have a resting blood pressure above 140?
@@ -619,9 +801,9 @@ Result:
 
 ---
 
-## Cancer
+### Cancer
 
-### Diagnosed patients
+#### Diagnosed Patients
 
 ```text
 How many patients were diagnosed with cancer?
@@ -633,7 +815,7 @@ Result:
 557 patients
 ```
 
-### Average BMI of smokers
+#### Average BMI of Smokers
 
 ```text
 What is the average BMI of smokers in the cancer dataset?
@@ -647,12 +829,12 @@ Approximately 27.36
 
 ---
 
-## Diabetes
+### Diabetes
 
-### Average BMI
+#### Average BMI
 
 ```text
-What is the average BMI of diabetic patients in the dataset?
+What is the average BMI of diabetic patients in the diabetes dataset?
 ```
 
 Result:
@@ -667,9 +849,21 @@ The underlying value is approximately:
 31.998
 ```
 
+#### Average Glucose Level
+
+```text
+What is the average glucose level of patients in the diabetes dataset?
+```
+
+Result:
+
+```text
+The average blood glucose level of patients in the diabetes dataset is approximately 138.22 mg/dL.
+```
+
 ---
 
-## General Medical Knowledge
+### General Medical Knowledge
 
 Example:
 
@@ -699,7 +893,40 @@ The web-search tool adds a medical disclaimer to its response.
 
 ---
 
-# 🧭 Tool Routing
+## 📊 Verified Application Results
+
+The following results were obtained from actual runtime testing of the application.
+
+| Dataset / Category | Query                            |    Verified Result |
+| ------------------ | -------------------------------- | -----------------: |
+| ❤️ Heart Disease   | Average age                      |    **54.42 years** |
+| ❤️ Heart Disease   | Resting blood pressure > 140     |    **65 patients** |
+| 🎗️ Cancer         | Patients diagnosed with cancer   |   **557 patients** |
+| 🎗️ Cancer         | Average BMI of smokers           |          **27.36** |
+| 🩺 Diabetes        | Average BMI of diabetic patients | **31.998 ≈ 32.00** |
+| 🩺 Diabetes        | Average glucose level            |   **138.22 mg/dL** |
+
+General medical questions such as:
+
+```text
+What are the symptoms of diabetes?
+```
+
+and:
+
+```text
+What causes heart disease?
+```
+
+were successfully routed to:
+
+```text
+medical_web_search_tool
+```
+
+---
+
+## 🧭 Tool Routing
 
 The main agent determines which tool should answer the question.
 
@@ -718,6 +945,7 @@ The main agent determines which tool should answer the question.
 
 ```text
 Question:
+
 How many patients have a resting blood pressure above 140?
 
                 ↓
@@ -745,6 +973,7 @@ For general medical information:
 
 ```text
 Question:
+
 What causes heart disease?
 
                 ↓
@@ -757,7 +986,7 @@ medical_web_search_tool
 
                 ↓
 
-Tavily
+Tavily / DuckDuckGo
 
                 ↓
 
@@ -766,13 +995,15 @@ Web Results
                 ↓
 
 Medical Information
+
 +
+
 Medical Disclaimer
 ```
 
 ---
 
-# 🧠 Google Gemini
+## 🧠 Google Gemini
 
 The project uses Google Gemini as the main LLM.
 
@@ -792,11 +1023,11 @@ The application can therefore change the configured Gemini model without changin
 
 ---
 
-# 🌐 Web Search
+## 🌐 Web Search
 
 The medical web-search tool uses two possible search backends.
 
-## Primary Backend
+### Primary Backend
 
 ```text
 Tavily
@@ -810,7 +1041,7 @@ TAVILY_API_KEY
 
 is configured.
 
-## Fallback Backend
+### Fallback Backend
 
 If Tavily fails or is unavailable, the application falls back to:
 
@@ -822,7 +1053,7 @@ This provides an additional search path without requiring a Tavily API key.
 
 ---
 
-# ⚠️ Tavily Integration Note
+## ⚠️ Tavily Integration Note
 
 The current LangChain version reports that:
 
@@ -848,7 +1079,7 @@ The current implementation continues to work, but migrating to the newer integra
 
 ---
 
-# 🔒 SQL Safety
+## 🔒 SQL Safety
 
 The database tools allow the LLM to generate SQL queries based on user questions.
 
@@ -864,13 +1095,21 @@ The intended workflow is:
 
 ```text
 User Question
+
       ↓
+
 Gemini generates SQL
+
       ↓
+
 SQL Safety Validation
+
       ↓
+
 SQLite
+
       ↓
+
 Query Result
 ```
 
@@ -878,7 +1117,7 @@ The database tools are intended primarily for read-only analytical queries.
 
 ---
 
-# 🧪 Testing
+## 🧪 Testing
 
 The project uses **Pytest** for automated testing.
 
@@ -902,9 +1141,9 @@ The latest test run completed successfully:
 
 ---
 
-## Test Individual Components
+## 🧪 Test Individual Components
 
-### Test database building
+### Test Database Building
 
 ```cmd
 python -m pytest tests\test_build_databases.py -v
@@ -912,9 +1151,7 @@ python -m pytest tests\test_build_databases.py -v
 
 This tests the database-building functionality.
 
----
-
-### Test database tools
+### Test Database Tools
 
 ```cmd
 python -m pytest tests\test_db_tools.py -v
@@ -922,9 +1159,7 @@ python -m pytest tests\test_db_tools.py -v
 
 This tests the database tool functionality.
 
----
-
-### Test SQL safety
+### Test SQL Safety
 
 ```cmd
 python -m pytest tests\test_sql_safety.py -v
@@ -934,7 +1169,7 @@ This tests SQL validation and safety behavior.
 
 ---
 
-# 🔧 Difference Between Build Scripts and Tests
+## 🔧 Difference Between Build Scripts and Tests
 
 There is an important distinction between these files.
 
@@ -956,21 +1191,27 @@ The recommended workflow is:
 
 ```text
 1. Build databases
+
        ↓
-python scripts\build_databases.py
+
+python scripts/build_databases.py
 
 2. Test database building
+
        ↓
+
 python -m pytest tests\test_build_databases.py -v
 
 3. Run complete test suite
+
        ↓
+
 python -m pytest -v
 ```
 
 ---
 
-# 🧹 Code Quality
+## 🧹 Code Quality
 
 The project uses **Ruff** for linting and code-quality checks.
 
@@ -996,7 +1237,7 @@ again to verify the remaining issues.
 
 ---
 
-# ⚙️ Pyproject Configuration
+## ⚙️ Pyproject Configuration
 
 The project uses `pyproject.toml` to configure Ruff.
 
@@ -1004,11 +1245,15 @@ Recommended configuration:
 
 ```toml
 [tool.ruff]
+
 line-length = 100
+
 target-version = "py312"
 
 [tool.ruff.lint]
+
 select = ["E", "F", "I", "W"]
+
 ignore = ["E501"]
 ```
 
@@ -1016,7 +1261,7 @@ The project targets Python 3.12.
 
 ---
 
-# 🔄 Continuous Integration
+## 🔄 Continuous Integration
 
 The project includes:
 
@@ -1032,19 +1277,33 @@ Typical workflow:
 
 ```text
 git push
+
     ↓
+
 GitHub Actions
+
     ↓
+
 Checkout repository
+
     ↓
+
 Install Python
+
     ↓
+
 Install dependencies
+
     ↓
+
 Run Pytest
+
     ↓
+
 Run Ruff
+
     ↓
+
 PASS / FAIL
 ```
 
@@ -1052,39 +1311,55 @@ The CI workflow helps detect broken code before changes are merged.
 
 ---
 
-# 📦 Requirements Files
+## 📦 Requirements Files
 
 The project uses two requirements files.
 
-## `requirements.txt`
+### `requirements.txt`
 
 Contains dependencies required to run the application.
 
-Example:
+The runtime stack includes:
 
 ```text
 langchain
 langchain-community
-langchain-google-genai
+langchain-openai
 langgraph
+langchain-google-genai
 kaggle
 pandas
 SQLAlchemy
 tavily-python
 duckduckgo-search
+gradio
 python-dotenv
+```
+
+Gradio is used to provide the browser-based user interface.
+
+The tested Gradio version is:
+
+```text
+6.27.0
+```
+
+For reproducibility, the project pins Gradio to:
+
+```text
+gradio==6.27.0
 ```
 
 ---
 
-## `requirements-dev.txt`
+### `requirements-dev.txt`
 
 Contains development and testing dependencies.
 
 It includes:
 
 ```text
-requirements.txt
+-r requirements.txt
 pytest
 ruff
 ```
@@ -1105,7 +1380,7 @@ python -m pip install -r requirements-dev.txt
 
 ---
 
-# 🛠️ Makefile
+## 🛠️ Makefile
 
 The project includes a `Makefile` for command automation.
 
@@ -1113,16 +1388,16 @@ Example targets:
 
 ```makefile
 test:
-	python -m pytest
+    python -m pytest
 
 lint:
-	ruff check .
+    ruff check .
 
 build-db:
-	python scripts/build_databases.py
+    python scripts/build_databases.py
 
 run:
-	python main.py
+    python main.py
 ```
 
 On Linux/macOS, commands can be executed with:
@@ -1163,23 +1438,30 @@ python scripts\build_databases.py
 python main.py
 ```
 
+For the Gradio interface:
+
+```cmd
+python app.py
+```
+
 Installing GNU Make is optional.
 
 ---
 
-# 🧩 Important Python Files
+## 🧩 Important Python Files
 
-## `main.py`
+### `main.py`
 
-Application entry point.
+Provides the terminal-based application interface.
 
 Responsible for:
 
-* Starting the application
+* Starting the CLI application
 * Creating/loading the agent
 * Accepting user input
 * Sending questions to the agent
 * Displaying responses
+* Displaying tool-call information
 
 Run it using:
 
@@ -1189,7 +1471,28 @@ python main.py
 
 ---
 
-## `agent/main_agent.py`
+### `app.py`
+
+Provides the browser-based Gradio interface.
+
+Responsible for:
+
+* Starting the Gradio application
+* Loading the Medical Multi-Tool AI Agent
+* Accepting questions through the web interface
+* Displaying agent responses in a conversational UI
+
+Run it using:
+
+```cmd
+python app.py
+```
+
+The Gradio interface uses the same underlying agent as `main.py`.
+
+---
+
+### `agent/main_agent.py`
 
 Responsible for creating and configuring the main AI agent.
 
@@ -1219,7 +1522,7 @@ create_agent(
 
 ---
 
-## `tools/db_tools.py`
+### `tools/db_tools.py`
 
 Contains the database tools:
 
@@ -1233,23 +1536,35 @@ The general process is:
 
 ```text
 User Question
+
       ↓
+
 Database Tool
+
       ↓
+
 Database Schema
+
       ↓
+
 Gemini SQL Generation
+
       ↓
+
 SQL Safety Check
+
       ↓
+
 SQLite
+
       ↓
+
 Result
 ```
 
 ---
 
-## `tools/web_search_tool.py`
+### `tools/web_search_tool.py`
 
 Contains:
 
@@ -1275,7 +1590,7 @@ A medical disclaimer is appended to the returned information.
 
 ---
 
-## `tools/sql_safety.py`
+### `tools/sql_safety.py`
 
 Contains SQL validation logic.
 
@@ -1283,43 +1598,49 @@ Its purpose is to prevent unsafe SQL statements from being executed against the 
 
 ---
 
-## `scripts/build_databases.py`
+### `scripts/build_databases.py`
 
 Converts the downloaded CSV datasets into SQLite databases.
 
 ---
 
-## `scripts/download_and_inspect.py`
+### `scripts/download_and_inspect.py`
 
 Used for downloading and inspecting the Kaggle datasets.
 
 ---
 
-## `scripts/test_queries.py`
+### `scripts/test_queries.py`
 
 Used for testing database queries and the LLM/database interaction.
 
 ---
 
-# 🧪 Test Architecture
+## 🧪 Test Architecture
 
 The testing structure mirrors the application structure:
 
 ```text
 scripts/build_databases.py
+
             ↓
+
 tests/test_build_databases.py
 ```
 
 ```text
 tools/db_tools.py
+
             ↓
+
 tests/test_db_tools.py
 ```
 
 ```text
 tools/sql_safety.py
+
             ↓
+
 tests/test_sql_safety.py
 ```
 
@@ -1327,7 +1648,7 @@ This makes it easier to identify which component is responsible when a test fail
 
 ---
 
-# ⚠️ Gemini Free-Tier Quota
+## ⚠️ Gemini Free-Tier Quota
 
 The application uses the Gemini API.
 
@@ -1339,13 +1660,21 @@ For example:
 
 ```text
 User Question
+
       ↓
+
 Main Agent → Tool Selection
+
       ↓
+
 Database Tool → SQL Generation
+
       ↓
+
 SQLite
+
       ↓
+
 Final Response
 ```
 
@@ -1370,7 +1699,7 @@ The application should not attempt to bypass API limits by creating multiple acc
 
 ---
 
-# ⚠️ Medical Safety Disclaimer
+## ⚠️ Medical Safety Disclaimer
 
 This project is an educational AI/ML application.
 
@@ -1378,6 +1707,7 @@ The medical web-search tool includes a disclaimer in its output:
 
 ```text
 This is general information from web sources, not medical advice.
+
 For diagnosis, treatment, or any personal health decision, please
 consult a qualified healthcare professional.
 ```
@@ -1390,13 +1720,13 @@ The application should **not** be used as a replacement for:
 * Professional treatment
 * Emergency medical services
 
-Dataset predictions and statistics should also not be interpreted as individual medical diagnoses.
+Dataset statistics should also not be interpreted as individual medical diagnoses.
 
 ---
 
-# 🚧 Known Limitations
+## 🚧 Known Limitations
 
-## 1. Dataset Dependency
+### 1. Dataset Dependency
 
 Dataset-related answers are limited to the information contained in the available datasets.
 
@@ -1409,7 +1739,7 @@ The datasets may not represent:
 
 ---
 
-## 2. LLM-Generated SQL
+### 2. LLM-Generated SQL
 
 SQL queries are generated by an LLM.
 
@@ -1417,7 +1747,7 @@ Although SQL safety validation is implemented, generated SQL can still be imperf
 
 ---
 
-## 3. Web Search Reliability
+### 3. Web Search Reliability
 
 General medical answers depend on external search results.
 
@@ -1425,21 +1755,19 @@ Search results can vary over time.
 
 ---
 
-## 4. API Quotas
+### 4. API Quotas
 
 Gemini and Tavily may have API usage limits depending on the user's account and plan.
 
 ---
 
-## 5. No Clinical Validation
+### 5. No Clinical Validation
 
 This is an educational project and has not been clinically validated.
 
 ---
 
-# 🚀 Future Improvements
-
-Potential future improvements include:
+## 🚀 Future Improvements
 
 ### 1. Migrate to `langchain-tavily`
 
@@ -1487,21 +1815,17 @@ Mental Health
 
 ---
 
-### 4. Add a Web Interface
+### 4. Improve the Gradio Interface
 
-A future version could provide:
+Potential improvements include:
 
-```text
-Gradio
-```
-
-or:
-
-```text
-Streamlit
-```
-
-based user interface.
+* Better conversation history
+* Tool-call/status indicators
+* Clearer dataset identification
+* Loading indicators
+* Error messages
+* Example-question buttons
+* Improved UI styling
 
 ---
 
@@ -1513,15 +1837,19 @@ For example:
 
 ```text
 User:
+
 How many diabetic patients are in the dataset?
 
 Agent:
+
 ...
 
 User:
+
 What is their average BMI?
 
 Agent:
+
 ...
 ```
 
@@ -1555,7 +1883,7 @@ Future versions could include:
 
 ---
 
-# 🔐 Security Best Practices
+## 🔐 Security Best Practices
 
 The following practices should be followed when using or deploying this project.
 
@@ -1619,7 +1947,7 @@ Periodically check for:
 
 ---
 
-# 📈 Project Status
+## 📈 Project Status
 
 | Component               | Status                |
 | ----------------------- | --------------------- |
@@ -1637,6 +1965,9 @@ Periodically check for:
 | LangChain agent         | ✅ Working             |
 | SQL safety              | ✅ Implemented         |
 | Automated tests         | ✅ 23 tests passing    |
+| CLI interface           | ✅ Working             |
+| Gradio web interface    | ✅ Working             |
+| Application screenshots | ✅ Added               |
 | Ruff linting            | 🔧 In progress        |
 | GitHub Actions CI       | ✅ Configured          |
 | Tavily migration        | 🔧 Future improvement |
@@ -1644,80 +1975,52 @@ Periodically check for:
 
 ---
 
-# 📊 Verified Application Results
-
-The following results were obtained from the application's actual runtime testing:
-
-```text
-Heart Disease
-Average age:
-54.42 years
-```
-
-```text
-Heart Disease
-Patients with resting blood pressure above 140:
-65
-```
-
-```text
-Cancer
-Patients diagnosed with cancer:
-557
-```
-
-```text
-Cancer
-Average BMI of smokers:
-27.36
-```
-
-```text
-Diabetes
-Average BMI of diabetic patients:
-31.998 ≈ 32.00
-```
-
-General medical questions such as:
-
-```text
-What are the symptoms of diabetes?
-```
-
-and:
-
-```text
-What causes heart disease?
-```
-
-were successfully routed to the medical web-search tool.
-
----
-
-# 🧑‍💻 Development Workflow
+## 🔄 Development Workflow
 
 A recommended development workflow is:
 
 ```text
 1. Activate virtual environment
+
         ↓
+
 2. Update/download datasets if required
+
         ↓
+
 3. Build SQLite databases
+
         ↓
+
 4. Run automated tests
+
         ↓
+
 5. Run Ruff
+
         ↓
+
 6. Run application
+
         ↓
+
 7. Test sample queries
+
         ↓
-8. Commit changes
+
+8. Test Gradio interface
+
         ↓
-9. Push to GitHub
+
+9. Commit changes
+
         ↓
-10. GitHub Actions runs CI
+
+10. Push to GitHub
+
+        ↓
+
+11. GitHub Actions runs CI
 ```
 
 Commands:
@@ -1738,13 +2041,21 @@ python -m pytest -v
 ruff check .
 ```
 
+Run the CLI:
+
 ```cmd
 python main.py
 ```
 
+Run the Gradio interface:
+
+```cmd
+python app.py
+```
+
 ---
 
-# 📚 Learning Objectives
+## 📚 Learning Objectives
 
 This project demonstrates practical concepts including:
 
@@ -1765,6 +2076,7 @@ This project demonstrates practical concepts including:
 * Google Gemini integration
 * Web search integration
 * Fallback systems
+* Gradio web interfaces
 * Automated testing
 * Pytest
 * Ruff
@@ -1774,7 +2086,7 @@ This project demonstrates practical concepts including:
 
 ---
 
-# 📝 License
+## 📝 License
 
 No separate software license is currently declared for this project.
 
@@ -1782,30 +2094,60 @@ If this project is intended to be distributed publicly, add an appropriate `LICE
 
 ---
 
-# 👤 Author
+## 👤 Author
 
 **Shaiful Islam**
 
-Medical Multi-Tool AI Agent — an educational project demonstrating AI agents, medical datasets, SQL databases, web search, and LangChain-based tool orchestration.
+Medical Multi-Tool AI Agent — an educational project demonstrating AI agents, medical datasets, SQL databases, web search, LangChain-based tool orchestration, and a Gradio web interface.
 
 ---
 
-# ⭐ Final Notes
+## ⭐ Final Notes
 
 This project is primarily intended for **learning, experimentation, and demonstration of AI-agent architecture**.
 
-The combination of structured datasets and web search demonstrates an important agent-design principle:
+The combination of structured datasets, unstructured web knowledge, LLM reasoning, specialized tools, and a web interface demonstrates an important agent-design principle:
 
 ```text
 Structured Data
+
       +
+
 Unstructured Web Knowledge
+
       +
+
 LLM Reasoning
+
       +
+
 Specialized Tools
+
+      +
+
+Web Interface
+
       ↓
+
 Multi-Tool AI Agent
 ```
 
 The project can serve as a foundation for building more advanced domain-specific AI agents with additional tools, databases, APIs, memory, observability, and user interfaces.
+
+The application currently supports both:
+
+```text
+Terminal Interface
+       ↓
+main.py
+```
+
+and:
+
+```text
+Gradio Web Interface
+       ↓
+app.py
+```
+
+while both interfaces share the same underlying Medical Multi-Tool AI Agent.

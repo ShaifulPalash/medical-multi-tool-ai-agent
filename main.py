@@ -8,7 +8,7 @@ USAGE:
 Make sure you've already run, in order:
     1. python scripts/download_and_inspect.py
     2. python scripts/build_databases.py
-and that your .env file has a valid OPENAI_API_KEY (see .env.example).
+and that your .env file has a valid GOOGLE_API_KEY (see .env.example).
 """
 
 import sys

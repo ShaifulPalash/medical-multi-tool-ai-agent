@@ -1,3 +1,4 @@
+```text
 # --- Core LangChain stack ---
 langchain>=0.3.0
 langchain-community>=0.3.0
@@ -15,5 +16,9 @@ SQLAlchemy>=2.0.0
 tavily-python>=0.5.0        # preferred: free API key from tavily.com
 duckduckgo-search>=6.2.0    # fallback: no API key required at all
 
+# --- UI ---
+gradio==6.27.0
+
 # --- Utilities ---
 python-dotenv>=1.0.0
+```
