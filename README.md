@@ -551,7 +551,7 @@ Python 3.12.0
 ### 1. Clone the repository
 
 ```cmd
-git clone <your-repository-url>
+git clone https://github.com/ShaifulPalash/medical-multi-tool-ai-agent
 ```
 
 Move into the project directory:
